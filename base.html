@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link id="stylesheetLink" rel="stylesheet" href="">
+</head>
+
+<body>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="https://vectorseek.com/wp-content/uploads/2023/09/Archlinux-Logo-Vector.svg-.png" alt="" width="30"
+            height="24" class="d-inline-block align-text-top"> Ico Poker
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div style="display: grid; justify-content: center;" class="mt-4">
+    <div class="card" style="width: 500px">
+      <div class="card-header text-center">
+        Vamos começar
+      </div>
+      <div class="card-body">
+        <div>
+          <legend class="text-center">Entrar em uma Sala</legend>
+          <div>
+            <label for="username">Usuário</label>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="username" aria-describedby="usernameHelp">
+            </div>
+          </div>
+          <div>
+            <label for="roomCode">Código da sala</label>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="roomCode" aria-describedby="roomCodeHelp">
+            </div>
+          </div>
+          <div class="text-center mt-3 d-flex flex-column">
+            <a href="#" class="btn btn-primary">Entrar</a>
+            <a href="#">Ou criar sala</a>
+          </div>
+
+        </div>
+        <!-- <div>
+          <legend class="text-center ">Ação</legend>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="optionsRadios" id="optionsRadios2" value="option2"
+              checked="">
+            <label class="form-check-label" for="optionsRadios2">
+              Entrar em uma Sala
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+            <label class="form-check-label" for="optionsRadios1">
+              Criar Sala
+            </label>
+          </div>
+        </div> -->
+
+        <hr>
+        <div>
+          <legend class="text-center">Criação de Sala</legend>
+          <label for="roomName">Titulo da sala</label>
+          <div class="mb-3">
+            <input type="text" class="form-control" id="roomName" aria-describedby="roomNameHelp">
+          </div>
+          <label for="roomType">Estilo das Cartas</label>
+          <div class="form-group">
+            <select class="form-select" id="roomType">
+              <option>Fibonnacci</option>
+              <option>Scrum</option>
+              <option>Sequencial</option>
+              <option>T-Shirt</option>
+              <option disabled>Customizado (Em breve)</option>
+            </select>
+          </div>
+          <div class="mt-3">
+            <legend class="text-center">Customização</legend>
+            <fieldset class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                  Usar todas as cartas
+                </label>
+              </div>
+              <hr>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    0
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked="">
+                  <label class="form-check-label" for="flexCheckChecked">
+                    1/2
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    1
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    2
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    3
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <legend class="text-center mt-3">Regras da Sala</legend>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+              Permitir usuários mudarem seus votos após serem exibidos?
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+              Auto revelar os votos quando todos votarem?
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+              Espectadores podem observar outros jogadores votando em tempo real?
+            </label>
+          </div>
+        </div>
+        <div class="text-center mt-3 d-flex flex-column">
+          <a href="#" class="btn btn-primary">Criar Sala</a>
+          <a href="#">Ou entrar em uma sala</a>
+        </div>
+      </div>
+      <div class="card-footer text-muted text-center">
+        Made by: Ryan Maia
+      </div>
+    </div>
+  </div>
+  <script>
+    // Lista de estilos CSS disponíveis
+    const stylesheets = [
+      "./public/cerulian.min.css",
+      "./public/cosmo.min.css",
+      "./public/cyborg.min.css",
+      "./public/darkly.min.css",
+      "./public/flaty.min.css",
+      "./public/journal.min.css",
+      "./public/litera.min.css",
+      "./public/lumen.min.css",
+      "./public/lux.min.css",
+      "./public/materia.min.css",
+      "./public/minty.min.css",
+      "./public/morph.min.css",
+      "./public/pulse.min.css",
+      "./public/quartz.min.css",
+      "./public/sandstone.min.css",
+      "./public/simplex.min.css",
+      "./public/sketchy.min.css",
+      "./public/slate.min.css",
+      "./public/solar.min.css",
+      "./public/spacelab.min.css",
+      "./public/superhero.min.css",
+      "./public/united.min.css",
+      "./public/vapor.min.css",
+      "./public/yeti.min.css",
+      "./public/zephyr.min.css"
+    ];
+
+    // Função para selecionar e aplicar um estilo CSS aleatório
+    function applyRandomStyle() {
+      const randomIndex = Math.floor(Math.random() * stylesheets.length);
+      console.log(stylesheets[randomIndex])
+      const randomStylesheet = stylesheets[randomIndex];
+      const stylesheetLink = document.getElementById("stylesheetLink");
+      stylesheetLink.href = randomStylesheet;
+    }
+
+    // Evento de clique para alterar o estilo
+    // const changeStyleButton = document.getElementById("changeStyleButton");
+    // changeStyleButton.addEventListener("click", applyRandomStyle);
+
+    // Aplicar um estilo aleatório ao carregar a página
+    applyRandomStyle();
+  </script>
+</body>
+
+</html>
