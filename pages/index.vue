@@ -1,6 +1,6 @@
 <script setup>
 
-// const formView = ref("entrar");
+const formView = ref("entrar");
 const cardsForTypes = {
   "Fibonnacci": {
     cards: ["0", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "?", "Coffee"]
@@ -15,8 +15,6 @@ const cardsForTypes = {
     cards: ["XS", "S", "M", "L", "XL", "XXL", "?", "Coffee"]
   }
 };
-
-const formView = ref("?");
 
 const roomTitle = ref("");
 const roomCardsType = ref(Object.keys(cardsForTypes)[0]);
@@ -47,16 +45,7 @@ function checkSelectedAllAvaliableCards() {
 </script>
 
 <template>
-  <nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
-      <div class="container">
-        <a class="navbar-brand" href="#">
-          <img src="https://vectorseek.com/wp-content/uploads/2023/09/Archlinux-Logo-Vector.svg-.png" alt="" width="30"
-            height="24" class="d-inline-block align-text-top"> Ico Poker
-        </a>
-      </div>
-    </div>
-  </nav>
+  <Navbar />
   <div style="display: grid; justify-content: center;" class="mt-4">
     <div class="card" style="width: 500px">
       <div class="card-header text-center">
@@ -87,6 +76,12 @@ function checkSelectedAllAvaliableCards() {
           <template v-else>
             <div>
               <legend class="text-center">Criação de Sala</legend>
+              <div>
+                <label for="username">Usuário</label>
+                <div class="mb-3">
+                  <input type="text" class="form-control" id="username" aria-describedby="usernameHelp">
+                </div>
+              </div>
               <label for="roomName">Titulo da sala</label>
               <div class="mb-3">
                 <input type="text" class="form-control" id="roomName" aria-describedby="roomNameHelp" v-model="roomTitle">
