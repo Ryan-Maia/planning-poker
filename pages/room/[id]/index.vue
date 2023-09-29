@@ -1,12 +1,24 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 
-const selectedCardIndex = ref(0);
+const route = useRoute();
+const { id } = route.params;
+console.log(route.params);
+console.log(route.query)
+const user = route.query.user;
+
 const showingResults = ref(false);
+const selectedCardIndex = ref(0);
+const isOwner = ref(false);
+const options = ref([]);
+const users = ref([]);
+
+const { $socket } = useNuxtApp()
+const cookie = useCookie('session', {maxAge: 60 * 60 * 8})
 
 function flipCards() {
   showingResults.value = !showingResults.value;
 }
-
 
 // VAI SER REMOVIDO
 const stylesheets = [
@@ -44,6 +56,58 @@ function applyStyle(style) {
   stylesheetLink.href = selectedStyle.value;
 }
 // ATÉ AQUI
+
+function initializeSocket() {
+  $socket.on('userInfo', (data) => {
+    console.log('recebeu o owner')
+    isOwner.value = data.owner;
+    console.log(data);
+    cookie.value = data.cookie;
+  });
+
+  $socket.on('roomData', (data) => {
+    console.log('recebeu os dados')
+    options.value = data.options;
+    users.value = data.users;
+    console.log(data);
+  })
+
+  $socket.on('invalidRoom', () => {
+    console.log('sala invalida')
+    navigateTo('/')
+  })
+
+  $socket.on('userVoted', (data) => {
+    console.log(`${data.user} votou em ${data.vote}`)
+  })
+
+  $socket.on('invalidCookie', () => {
+    console.log('cookie invalido')
+    cookie.value = null;
+  })
+
+  if(cookie.value) {
+    console.log('cookie exists')
+    $socket.emit('joinRoom', { roomId: id, cookie: cookie.value, user: user })
+  } else {
+    console.log('cookie does not exist')
+    $socket.emit('joinRoom', { roomId: id, user: user })
+  }
+
+  // console.log('joining room');
+  // $socket.emit('joinRoom', { roomId: id })
+  // console.log('joined room');
+}
+
+function vote(value) {
+  console.log('votou')
+  $socket.emit('vote', { roomId: id, value: value })
+}
+
+onMounted(() => {
+  initializeSocket();
+}); 
+
 </script>
 
 <template>
@@ -55,7 +119,7 @@ function applyStyle(style) {
   <div class="container mt-3">
     <div class="row">
       <div class="col px-2">
-        <div class="container card border-primary p-3">
+        <div class="container card border-primary p-3" v-if="isOwner">
           <h1> Controles </h1>
           <hr>
           <div class="row">
@@ -102,9 +166,9 @@ function applyStyle(style) {
                   class="my-4"> -->
               <div class="row justify-content-center gy-4">
                 <div class="col-sm-12 col-md-6 col-lg-4 text-center d-flex justify-content-center"
-                  v-for="(number, index) in Array.from({ length: 7 }, (value, index) => index)">
+                  v-for="(number, index) in options">
 
-                  <PokerCard cardValue="23" :selected="selectedCardIndex == index" @click="selectedCardIndex = index" />
+                  <PokerCard :cardValue=number :selected="selectedCardIndex == index" @click="selectedCardIndex = index; vote(number)" />
                 </div>
               </div>
             </div>
@@ -146,11 +210,11 @@ function applyStyle(style) {
       </Transition>
       <div class="col-sm-12 col-xl-3 px-2">
         <div class="card border-primary mb-3 "
-          v-for="(number, index) in Array.from({ length: 7 }, (value, index) => index)">
+          v-for="(user, index) in users">
           <div class="card-body row">
-            <label class="label" style="font-size: 26px;">RYAN MAIA</label>
+            <label class="label" style="font-size: 26px;">{{ user.name }}</label>
             <div>
-              <span class="badge rounded-pill bg-primary" style="font-size: 14px;">?</span>
+              <span class="badge rounded-pill bg-primary" style="font-size: 14px;">{{ user.vote }}</span>
             </div>
           </div>
         </div>

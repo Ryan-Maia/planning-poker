@@ -1,5 +1,6 @@
 <script setup>
-
+import { ref, onMounted } from 'vue';
+const { $socket } = useNuxtApp()
 const formView = ref("entrar");
 const cardsForTypes = {
   "Fibonnacci": {
@@ -19,8 +20,14 @@ const cardsForTypes = {
 const roomTitle = ref("");
 const roomCardsType = ref(Object.keys(cardsForTypes)[0]);
 
+const usernameCreate = ref("");
+const usernameJoin = ref("");
 const roomAvaliableCards = ref(cardsForTypes[roomCardsType.value].cards)
 const roomSelectedCards = ref([])
+const allowChangingVote = ref(false)
+const autoRevealVotes = ref(false)
+const realTimeSpectate = ref(false)
+const roomNumber = ref("")
 
 function changeFormView() {
   formView.value = (formView.value == "entrar") ? "criar" : "entrar";
@@ -42,6 +49,49 @@ function checkSelectedAllAvaliableCards() {
   return roomSelectedCards.value.length == roomAvaliableCards.value.length;
 }
 
+function initializeSocket() {
+  $socket.on('roomCreated', (data) => {
+    console.log(data);
+    navigateTo(`/room/${data.roomId}`)
+  });
+}
+
+function createRoom() {
+  const cookie = useCookie('session', {maxAge: 60 * 60 * 8})
+  cookie.value = null;
+  console.group("Room Creation");
+    console.log(roomTitle.value);
+    console.log(roomCardsType.value);
+    console.log(roomSelectedCards.value);
+    console.log(allowChangingVote.value);
+    console.log(autoRevealVotes.value);
+    console.log(realTimeSpectate.value);
+  console.groupEnd();
+
+  $socket.emit('createRoom', { 
+    user: usernameCreate.value,
+    room: {
+      title: roomTitle.value,
+      options: roomSelectedCards.value,
+      allowChangingVote: allowChangingVote.value,
+      autoRevealVotes: autoRevealVotes.value,
+      realTimeSpectate: realTimeSpectate.value
+    }
+  });
+
+}
+
+function joinRoom() {
+  const cookie = useCookie('session', {maxAge: 60 * 60 * 8})
+  cookie.value = null;
+  navigateTo(`/room/${roomNumber.value}?user=${usernameJoin.value}`)
+}
+
+onMounted(() => {
+  initializeSocket();
+  provide('aoba', "salve")
+});
+
 </script>
 
 <template>
@@ -58,17 +108,17 @@ function checkSelectedAllAvaliableCards() {
             <div>
               <label for="username">Usuário</label>
               <div class="mb-3">
-                <input type="text" class="form-control" id="username" aria-describedby="usernameHelp">
+                <input type="text" v-model="usernameJoin" class="form-control" id="username" aria-describedby="usernameHelp">
               </div>
             </div>
             <div>
               <label for="roomCode">Código da sala</label>
               <div class="mb-3">
-                <input type="text" class="form-control" id="roomCode" aria-describedby="roomCodeHelp">
+                <input type="text" v-model="roomNumber" class="form-control" id="roomCode" aria-describedby="roomCodeHelp">
               </div>
             </div>
             <div class="text-center mt-3 d-flex flex-column">
-              <a href="#" class="btn btn-primary">Entrar</a>
+              <a href="#" @click="joinRoom" class="btn btn-primary">Entrar</a>
               <a href="#" @click="changeFormView">Ou criar sala</a>
             </div>
 
@@ -79,7 +129,7 @@ function checkSelectedAllAvaliableCards() {
               <div>
                 <label for="username">Usuário</label>
                 <div class="mb-3">
-                  <input type="text" class="form-control" id="username" aria-describedby="usernameHelp">
+                  <input type="text" v-model="usernameCreate" class="form-control" id="username" aria-describedby="usernameHelp">
                 </div>
               </div>
               <label for="roomName">Titulo da sala</label>
@@ -121,25 +171,25 @@ function checkSelectedAllAvaliableCards() {
               </div>
               <legend class="text-center mt-3">Regras da Sala</legend>
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <input class="form-check-input" v-model="allowChangingVote" type="checkbox" value="" id="flexCheckDefault">
                 <label class="form-check-label" for="flexCheckDefault">
                   Permitir usuários mudarem seus votos após serem exibidos?
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <input class="form-check-input" v-model="autoRevealVotes" type="checkbox" value="" id="flexCheckDefault">
                 <label class="form-check-label" for="flexCheckDefault">
                   Auto revelar os votos quando todos votarem?
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <input class="form-check-input" v-model="realTimeSpectate" type="checkbox" value="" id="flexCheckDefault">
                 <label class="form-check-label" for="flexCheckDefault">
                   Espectadores podem observar outros jogadores votando em tempo real?
                 </label>
               </div>
               <div class="text-center mt-3 d-flex flex-column">
-                <a href="#" class="btn btn-primary">Criar Sala</a>
+                <a href="#" @click="createRoom" class="btn btn-primary">Criar Sala</a>
                 <a href="#" @click="changeFormView">Ou entrar em uma sala</a>
               </div>
             </div>

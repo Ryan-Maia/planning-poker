@@ -7,5 +7,8 @@ export default defineNuxtConfig({
       enabled: true
     }
   },
-  pages: true
+  pages: true,
+  plugins: [
+    { src: '~/plugins/socket.js', ssr: false }
+  ],
 })
