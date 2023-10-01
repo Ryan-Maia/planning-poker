@@ -57,18 +57,18 @@ function initializeSocket() {
 }
 
 function createRoom() {
-  const cookie = useCookie('session', {maxAge: 60 * 60 * 8})
+  const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
   cookie.value = null;
   console.group("Room Creation");
-    console.log(roomTitle.value);
-    console.log(roomCardsType.value);
-    console.log(roomSelectedCards.value);
-    console.log(allowChangingVote.value);
-    console.log(autoRevealVotes.value);
-    console.log(realTimeSpectate.value);
+  console.log(roomTitle.value);
+  console.log(roomCardsType.value);
+  console.log(roomSelectedCards.value);
+  console.log(allowChangingVote.value);
+  console.log(autoRevealVotes.value);
+  console.log(realTimeSpectate.value);
   console.groupEnd();
 
-  $socket.emit('createRoom', { 
+  $socket.emit('createRoom', {
     user: usernameCreate.value,
     room: {
       title: roomTitle.value,
@@ -82,8 +82,7 @@ function createRoom() {
 }
 
 function joinRoom() {
-  const cookie = useCookie('session', {maxAge: 60 * 60 * 8})
-  cookie.value = null;
+  const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
   navigateTo(`/room/${roomNumber.value}?user=${usernameJoin.value}`)
 }
 
@@ -108,13 +107,15 @@ onMounted(() => {
             <div>
               <label for="username">Usuário</label>
               <div class="mb-3">
-                <input type="text" v-model="usernameJoin" class="form-control" id="username" aria-describedby="usernameHelp">
+                <input type="text" v-model="usernameJoin" class="form-control" id="username"
+                  aria-describedby="usernameHelp">
               </div>
             </div>
             <div>
               <label for="roomCode">Código da sala</label>
               <div class="mb-3">
-                <input type="text" v-model="roomNumber" class="form-control" id="roomCode" aria-describedby="roomCodeHelp">
+                <input type="text" v-model="roomNumber" class="form-control" id="roomCode"
+                  aria-describedby="roomCodeHelp">
               </div>
             </div>
             <div class="text-center mt-3 d-flex flex-column">
@@ -129,7 +130,8 @@ onMounted(() => {
               <div>
                 <label for="username">Usuário</label>
                 <div class="mb-3">
-                  <input type="text" v-model="usernameCreate" class="form-control" id="username" aria-describedby="usernameHelp">
+                  <input type="text" v-model="usernameCreate" class="form-control" id="username"
+                    aria-describedby="usernameHelp">
                 </div>
               </div>
               <label for="roomName">Titulo da sala</label>
@@ -171,7 +173,8 @@ onMounted(() => {
               </div>
               <legend class="text-center mt-3">Regras da Sala</legend>
               <div class="form-check">
-                <input class="form-check-input" v-model="allowChangingVote" type="checkbox" value="" id="flexCheckDefault">
+                <input class="form-check-input" v-model="allowChangingVote" type="checkbox" value=""
+                  id="flexCheckDefault">
                 <label class="form-check-label" for="flexCheckDefault">
                   Permitir usuários mudarem seus votos após serem exibidos?
                 </label>
