@@ -12,6 +12,8 @@ const isOwner = ref(false);
 const options = ref([]);
 const users = ref([]);
 
+const subPage = ref("info");
+
 const { $socket } = useNuxtApp()
 const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
 
@@ -158,16 +160,14 @@ onMounted(() => {
   <div class="container mt-4 pb-4">
     <div class="row gy-4">
       <Transition mode="out-in" duration="200">
-        <div class="col-sm-12 col-xl-9 px-2" v-if="!showingResults">
+        <div class="col-sm-12 col-xl-9 px-2" v-if="subPage == 'voting'">
           <div class="card border-primary">
             <div class="container card-body">
-              <div>
-                <div class="text-center">
-                  <label style="font-size: 42px;" class="mt-4">Issue xpto do gitlab</label>
-                </div>
-                <Markdown />
-              </div>
               <div class="mb-5">
+                <button class="btn btn-primary" @click="subPage = 'info'">
+                  Acessar Informação da Issue
+                </button>
+                <br>
                 <label>Progresso da votação:</label>
                 <div class="progress">
                   <div class="progress-bar bg-success progress-bar-animated" role="progressbar" style="width: 25%;"
@@ -188,39 +188,54 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="col-sm-12 col-xl-9 px-2" v-else>
-          <div class="container card border-primary text-center">
-            <label style="font-size: 42px;" class="my-4">Resultados da Votação</label>
-            <div class="row justify-content-center">
-              <div class="col-sm-6 col-xl-4">
-                <div class="card border-primary mb-3" style="min-height: 200px;">
-                  <div class="card-header" style="font-size: 24px;">Mediana</div>
-                  <div class="card-body d-grid" style="align-items: center;">
-                    <label style="font-size: 80px !important;">2</label>
+        <template v-else>
+          <div class="col-sm-12 col-xl-9 px-2" v-if="!showingResults">
+            <div class="card border-primary">
+              <div class="container card-body">
+                <div>
+                  <div class="text-center">
+                    <button class="btn btn-primary" @click="subPage = 'voting'">
+                      Acessar Votação
+                    </button>
+                    <label style="font-size: 42px;" class="mt-4">Issue xpto do gitlab</label>
                   </div>
+                  <Markdown />
                 </div>
               </div>
-              <div class="col-sm-6 col-xl-4">
-                <div class="card border-primary mb-3" style="min-height: 200px;">
-                  <div class="card-header" style="font-size: 24px;">Média</div>
-                  <div class="card-body d-grid" style="align-items: center;">
-                    <label style="font-size: 80px !important;">3</label>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-6 col-xl-4">
-                <div class="card border-primary mb-3" style="min-height: 200px;">
-                  <div class="card-header" style="font-size: 24px;">Total de Votos</div>
-                  <div class="card-body d-grid" style="align-items: center;">
-                    <label style="font-size: 80px !important;">7</label>
-                  </div>
-                </div>
-              </div>
-
-
             </div>
           </div>
-        </div>
+          <div class="col-sm-12 col-xl-9 px-2" v-else>
+            <div class="container card border-primary text-center">
+              <label style="font-size: 42px;" class="my-4">Resultados da Votação</label>
+              <div class="row justify-content-center">
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card border-primary mb-3" style="min-height: 200px;">
+                    <div class="card-header" style="font-size: 24px;">Mediana</div>
+                    <div class="card-body d-grid" style="align-items: center;">
+                      <label style="font-size: 80px !important;">2</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card border-primary mb-3" style="min-height: 200px;">
+                    <div class="card-header" style="font-size: 24px;">Média</div>
+                    <div class="card-body d-grid" style="align-items: center;">
+                      <label style="font-size: 80px !important;">3</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card border-primary mb-3" style="min-height: 200px;">
+                    <div class="card-header" style="font-size: 24px;">Total de Votos</div>
+                    <div class="card-body d-grid" style="align-items: center;">
+                      <label style="font-size: 80px !important;">7</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
       </Transition>
       <div class="col-sm-12 col-xl-3 px-2">
         <div class="card border-primary mb-3 " v-for="(user, index) in users">
