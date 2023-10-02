@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 const io = new Server(3030, { cors: { origin: "*" } });
 const rooms = [];
-let roomId = 0;
+const roomsIds = [];
 
 const room = {
   id: 'id da sala',
@@ -32,12 +32,30 @@ const issue = {
   result: {},
 }
 
+function generateRoomId() {
+  const caracteres = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let resultado = '';
+  for (let i = 0; i < 4; i++) {
+      const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+      resultado += caracteres.charAt(indiceAleatorio);
+  }
+  return resultado;
+}
+
 io.on("connection", (socket) => {
-  console.log("soquete")
+  console.log("Nova Conexão")
 
   socket.on("createRoom", (data) => {
     const { user, room } = data;
-    roomId++;
+    let roomId = ""
+    while(true) {
+      roomId = generateRoomId()
+      if (!rooms.includes(roomId)) break
+      console.log(`Sala com id: ${roomId} já existente, gerando outro...`)
+    }
+    roomsIds.push(room.id)
+
+
     room.id = roomId;
     room.lastUserId = 1;
     room.users = [];
@@ -47,9 +65,9 @@ io.on("connection", (socket) => {
     socket.emit("roomCreated", { roomId: roomId });
   }),
 
-    socket.on("joinRoomAsSpectator", (data) => {
-      //TO DO
-    })
+  socket.on("joinRoomAsSpectator", (data) => {
+    //TO DO
+  })
 
   socket.on("joinRoom", (data) => {
     console.log('🚀 ~ file: socket.js:55 ~ data:', data);
@@ -94,12 +112,12 @@ io.on("connection", (socket) => {
     }
   }),
 
-    socket.on("vote", (data) => {
-      const room = rooms.find(room => room.id == data.roomId)
-      const user = room.users.find(user => user.socket === socket);
-      user.vote = data.value;
-      io.to(parseInt(data.roomId)).emit("userVoted", { vote: data.value, userId: user.id});
-    })
+  socket.on("vote", (data) => {
+    const room = rooms.find(room => room.id == data.roomId)
+    const user = room.users.find(user => user.socket === socket);
+    user.vote = data.value;
+    io.to(data.roomId).emit("userVoted", { vote: data.value, userId: user.id});
+  })
 
   socket.on("revealVotes", (data) => {
     io.to(data.roomId).emit("reveal", "Votos revelados", data.room.users.map(user => { return { name: user.name, vote: user.vote } }));

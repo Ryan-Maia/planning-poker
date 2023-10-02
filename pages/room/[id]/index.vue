@@ -160,17 +160,16 @@ onMounted(() => {
       <Transition mode="out-in" duration="200">
         <div class="col-sm-12 col-xl-9 px-2" v-if="!showingResults">
           <div class="card border-primary">
-
             <div class="container card-body">
-
-              <div class="text-center">
-                <label style="font-size: 42px;" class="mt-4">Issue xpto do gitlab</label>
+              <div>
+                <div class="text-center">
+                  <label style="font-size: 42px;" class="mt-4">Issue xpto do gitlab</label>
+                </div>
+                <Markdown />
               </div>
-
               <div class="mb-5">
                 <label>Progresso da votação:</label>
                 <div class="progress">
-
                   <div class="progress-bar bg-success progress-bar-animated" role="progressbar" style="width: 25%;"
                     aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
