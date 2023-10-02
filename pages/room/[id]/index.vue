@@ -108,7 +108,7 @@ onMounted(() => {
     user.value = localStorage.getItem("user")
     console.log(localStorage.getItem("user") == "");
     if (!user.value || user.value == "") {
-      navigateTo("/")
+      navigateTo(`/?id=${id}`)
     }
   }
   initializeSocket();

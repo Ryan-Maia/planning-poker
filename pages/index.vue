@@ -17,16 +17,19 @@ const cardsForTypes = {
   }
 };
 
+const route = useRoute();
+const { id } = route.query;
+
 const roomTitle = ref("");
 const roomCardsType = ref(Object.keys(cardsForTypes)[0]);
 
 const username = ref("");
 const roomAvaliableCards = ref(cardsForTypes[roomCardsType.value].cards)
-const roomSelectedCards = ref([])
+const roomSelectedCards = ref(roomAvaliableCards.value)
 const allowChangingVote = ref(false)
 const autoRevealVotes = ref(false)
 const realTimeSpectate = ref(false)
-const roomNumber = ref("")
+const roomNumber = ref(id || "")
 
 function changeFormView() {
   formView.value = (formView.value == "entrar") ? "criar" : "entrar";
@@ -80,8 +83,7 @@ function createRoom() {
 }
 
 function joinRoom(roomId, createRoom = false) {
-  console.log('🚀 ~ file: index.vue:84 ~ createRoom:', createRoom);
-  if (!createRoom) useCookie('session', { maxAge: 60 * 60 * 8 })
+  if (!createRoom) clearData()
   if (process.client) {
     localStorage.setItem("user", username.value)
   }
@@ -89,6 +91,12 @@ function joinRoom(roomId, createRoom = false) {
   navigateTo(`/room/${roomId}`)
 }
 
+function clearData() {
+  const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
+  cookie.value = null
+  localStorage.removeItem("user")
+  console.log(localStorage.getItem("user"))
+}
 onMounted(() => {
   initializeSocket();
   provide('aoba', "salve")
@@ -203,6 +211,16 @@ onMounted(() => {
       </div>
       <div class="card-footer text-muted text-center">
         Made by: Ryan Maia
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-3">
+        <button class="btn btn-primary" @click="clearData">
+          Remover Cookie
+        </button>
+
       </div>
     </div>
   </div>
