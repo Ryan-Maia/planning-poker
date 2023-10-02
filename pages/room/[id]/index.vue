@@ -77,7 +77,15 @@ function initializeSocket() {
   })
 
   $socket.on('userVoted', (data) => {
-    console.log(`${data.user} votou em ${data.vote}`)
+    console.log("USERVOTED")
+    console.log(data)
+    const usersModified = users.value.map(e => {
+      if (e.id == data.userId) {
+        e.vote = data.vote
+      }
+      return e
+    })
+    users.value = usersModified;
   })
 
   $socket.on('invalidCookie', () => {

@@ -96,9 +96,10 @@ io.on("connection", (socket) => {
 
 
 		socket.on("vote", (data) => {
-			const user = rooms.find(room => room.id == data.roomId).users.find(user => user.socket === socket);
+			const room = rooms.find(room => room.id == data.roomId)
+			const user = room.users.find(user => user.socket === socket);
 			user.vote = data.value;
-			io.to(data.roomId).emit("userVoted", `O usuario ${data.user} votou`, { user: user.name, vote: data });
+			io.to(parseInt(data.roomId)).emit("userVoted", { vote: data.value, userId: user.id});
 		})
 
 	socket.on("revealVotes", (data) => {
