@@ -52,11 +52,13 @@ io.on("connection", (socket) => {
 		})
 
 	socket.on("joinRoom", (data) => {
+		console.log('🚀 ~ file: socket.js:55 ~ data:', data);
 		const room = rooms.find(room => room.id == data.roomId);
 		if (!room) {
 			socket.emit('invalidRoom');
 			return;
 		}
+		
 		if (data.cookie) {
 			const cookie = data.cookie.split('|');
 			if (cookie[1] == room.id) {

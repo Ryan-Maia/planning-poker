@@ -20,8 +20,7 @@ const cardsForTypes = {
 const roomTitle = ref("");
 const roomCardsType = ref(Object.keys(cardsForTypes)[0]);
 
-const usernameCreate = ref("");
-const usernameJoin = ref("");
+const username = ref("");
 const roomAvaliableCards = ref(cardsForTypes[roomCardsType.value].cards)
 const roomSelectedCards = ref([])
 const allowChangingVote = ref(false)
@@ -51,8 +50,7 @@ function checkSelectedAllAvaliableCards() {
 
 function initializeSocket() {
   $socket.on('roomCreated', (data) => {
-    console.log(data);
-    navigateTo(`/room/${data.roomId}`)
+    joinRoom(data.roomId, true)
   });
 }
 
@@ -69,7 +67,7 @@ function createRoom() {
   console.groupEnd();
 
   $socket.emit('createRoom', {
-    user: usernameCreate.value,
+    user: username.value,
     room: {
       title: roomTitle.value,
       options: roomSelectedCards.value,
@@ -81,9 +79,14 @@ function createRoom() {
 
 }
 
-function joinRoom() {
-  const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
-  navigateTo(`/room/${roomNumber.value}?user=${usernameJoin.value}`)
+function joinRoom(roomId, createRoom = false) {
+  console.log('🚀 ~ file: index.vue:84 ~ createRoom:', createRoom);
+  if (!createRoom) useCookie('session', { maxAge: 60 * 60 * 8 })
+  if (process.client) {
+    localStorage.setItem("user", username.value)
+  }
+  console.log('🚀 ~ file: index.vue:91 ~ roomId:', roomId);
+  navigateTo(`/room/${roomId}`)
 }
 
 onMounted(() => {
@@ -107,8 +110,7 @@ onMounted(() => {
             <div>
               <label for="username">Usuário</label>
               <div class="mb-3">
-                <input type="text" v-model="usernameJoin" class="form-control" id="username"
-                  aria-describedby="usernameHelp">
+                <input type="text" v-model="username" class="form-control" id="username" aria-describedby="usernameHelp">
               </div>
             </div>
             <div>
@@ -119,7 +121,7 @@ onMounted(() => {
               </div>
             </div>
             <div class="text-center mt-3 d-flex flex-column">
-              <a href="#" @click="joinRoom" class="btn btn-primary">Entrar</a>
+              <a href="#" @click="joinRoom(roomNumber)" class="btn btn-primary">Entrar</a>
               <a href="#" @click="changeFormView">Ou criar sala</a>
             </div>
 
@@ -130,7 +132,7 @@ onMounted(() => {
               <div>
                 <label for="username">Usuário</label>
                 <div class="mb-3">
-                  <input type="text" v-model="usernameCreate" class="form-control" id="username"
+                  <input type="text" v-model="username" class="form-control" id="username"
                     aria-describedby="usernameHelp">
                 </div>
               </div>

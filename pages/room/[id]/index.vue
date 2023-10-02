@@ -3,18 +3,17 @@ import { ref, onMounted } from 'vue';
 
 const route = useRoute();
 const { id } = route.params;
-console.log(route.params);
-console.log(route.query)
-const user = route.query.user;
+
+const user = ref();
 
 const showingResults = ref(false);
-const selectedCardIndex = ref(0);
+const selectedCardIndex = ref();
 const isOwner = ref(false);
 const options = ref([]);
 const users = ref([]);
 
 const { $socket } = useNuxtApp()
-const cookie = useCookie('session', {maxAge: 60 * 60 * 8})
+const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
 
 function flipCards() {
   showingResults.value = !showingResults.value;
@@ -86,12 +85,12 @@ function initializeSocket() {
     cookie.value = null;
   })
 
-  if(cookie.value) {
+  if (cookie.value) {
     console.log('cookie exists')
-    $socket.emit('joinRoom', { roomId: id, cookie: cookie.value, user: user })
+    $socket.emit('joinRoom', { roomId: id, cookie: cookie.value, user: user.value })
   } else {
     console.log('cookie does not exist')
-    $socket.emit('joinRoom', { roomId: id, user: user })
+    $socket.emit('joinRoom', { roomId: id, user: user.value })
   }
 
   // console.log('joining room');
@@ -105,8 +104,15 @@ function vote(value) {
 }
 
 onMounted(() => {
+  if (process.client) {
+    user.value = localStorage.getItem("user")
+    console.log(localStorage.getItem("user") == "");
+    if (!user.value || user.value == "") {
+      navigateTo("/")
+    }
+  }
   initializeSocket();
-}); 
+});
 
 </script>
 
@@ -168,7 +174,8 @@ onMounted(() => {
                 <div class="col-sm-12 col-md-6 col-lg-4 text-center d-flex justify-content-center"
                   v-for="(number, index) in options">
 
-                  <PokerCard :cardValue=number :selected="selectedCardIndex == index" @click="selectedCardIndex = index; vote(number)" />
+                  <PokerCard :cardValue=number :selected="selectedCardIndex == index"
+                    @click="selectedCardIndex = index; vote(number)" />
                 </div>
               </div>
             </div>
@@ -209,8 +216,7 @@ onMounted(() => {
         </div>
       </Transition>
       <div class="col-sm-12 col-xl-3 px-2">
-        <div class="card border-primary mb-3 "
-          v-for="(user, index) in users">
+        <div class="card border-primary mb-3 " v-for="(user, index) in users">
           <div class="card-body row">
             <label class="label" style="font-size: 26px;">{{ user.name }}</label>
             <div>
