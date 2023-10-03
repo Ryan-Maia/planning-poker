@@ -53,6 +53,7 @@ function checkSelectedAllAvaliableCards() {
 
 function initializeSocket() {
   $socket.on('roomCreated', (data) => {
+    console.log('🚀 ~ file: index.vue:56 ~ data:', data);
     joinRoom(data.roomId, true)
   });
 }

@@ -11,4 +11,7 @@ export default defineNuxtConfig({
   plugins: [
     { src: '~/plugins/socket.js', ssr: false }
   ],
+  routeRules: {
+    "/room/*": {ssr: false}
+  }
 })

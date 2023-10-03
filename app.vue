@@ -31,8 +31,8 @@ onMounted(() => {
 
 </script>
 <template>
-  <link id="stylesheetLink" rel="stylesheet" href="/sketchy.min.css">
+  <link id="stylesheetLink" rel="stylesheet" href="/lumen.min.css">
   <NuxtLayout>
-    <NuxtPage/>
+    <NuxtPage />
   </NuxtLayout>
 </template>

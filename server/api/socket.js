@@ -47,22 +47,27 @@ io.on("connection", (socket) => {
 
   socket.on("createRoom", (data) => {
     const { user, room } = data;
+
+    // Início da Geração do código da sala
     let roomId = ""
+
     while(true) {
-      roomId = generateRoomId()
-      if (!rooms.includes(roomId)) break
-      console.log(`Sala com id: ${roomId} já existente, gerando outro...`)
+      room.id = generateRoomId()
+      if (!rooms.includes(room.id)) break
+      console.error(`Sala com id: ${room.id} já existente, gerando outro...`)
     }
+
+    
     roomsIds.push(room.id)
+    // Fim da Geração do código da sala
 
-
-    room.id = roomId;
     room.lastUserId = 1;
     room.users = [];
+    room.issues = [];
     room.owner = { id: room.lastUserId, name: user, vote: '?', socket: socket };
     room.users.push({ id: room.lastUserId, name: user, vote: '?', socket: socket, room: roomId, voted: false });
     rooms.push(room);
-    socket.emit("roomCreated", { roomId: roomId });
+    socket.emit("roomCreated", { roomId: room.id });
   }),
 
   socket.on("joinRoomAsSpectator", (data) => {

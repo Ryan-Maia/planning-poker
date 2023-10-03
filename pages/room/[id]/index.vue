@@ -11,6 +11,7 @@ const selectedCardIndex = ref();
 const isOwner = ref(false);
 const options = ref([]);
 const users = ref([]);
+const showIssuesManagerModal = ref(true);
 
 const subPage = ref("info");
 
@@ -69,6 +70,8 @@ function initializeSocket() {
   $socket.on('roomData', (data) => {
     console.log('recebeu os dados')
     options.value = data.options;
+    const title = data.title.length > 15 ? `${data.title.slice(0, 12)}...` : data.title
+    document.title = `${title} - ${data.id}` || "Planning Poker"
     users.value = data.users;
     console.log(data);
   })
@@ -137,10 +140,55 @@ onMounted(() => {
       <div class="col px-2">
         <div class="container card border-primary p-3" v-if="isOwner">
           <h1> Controles </h1>
-          <hr>
           <div class="row">
             <div class="col">
-              <button class="btn btn-primary">Iniciar Votação</button>
+              <button class="btn btn-primary" @click="showIssuesManagerModal = true">Gerenciar Issues</button>
+              <Modal v-model="showIssuesManagerModal">
+                <template v-slot:header>
+                  <h4 class="modal-title">Controle de issues</h4>
+                </template>
+                <template v-slot:body>
+                  <form>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        Integração ao gitlab (Feature Exprimental)
+                      </label>
+                    </div>
+                    <div>
+                      <label>Título da Issue</label>
+                      <div class="mb-3">
+                        <input type="text" class="form-control">
+                      </div>
+                    </div>
+                    <div>
+                      <label>Id do projeto no Gitlab</label>
+                      <input class="form-control" type="number">
+                    </div>
+                    <div>
+                      <label>Id da issue no Gitlab</label>
+                      <input class="form-control" type="number">
+                    </div>
+                    <div>
+                      <button class="btn btn-primary">
+                        Verificar Issue
+                      </button>
+                    </div>
+                  </form>
+                  <!-- <table>
+                    <thead>
+                      <tr>
+                        <th>A</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>AOSDKJ</td>
+                      </tr>
+                    </tbody>
+                  </table> -->
+                </template>
+              </Modal>
             </div>
             <div class="col">
               <button class="btn btn-primary" @click="flipCards">Virar
