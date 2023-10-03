@@ -36,8 +36,8 @@ function generateRoomId() {
   const caracteres = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let resultado = '';
   for (let i = 0; i < 4; i++) {
-      const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
-      resultado += caracteres.charAt(indiceAleatorio);
+    const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+    resultado += caracteres.charAt(indiceAleatorio);
   }
   return resultado;
 }
@@ -51,28 +51,28 @@ io.on("connection", (socket) => {
     // Início da Geração do código da sala
     let roomId = ""
 
-    while(true) {
+    while (true) {
       room.id = generateRoomId()
       if (!rooms.includes(room.id)) break
       console.error(`Sala com id: ${room.id} já existente, gerando outro...`)
     }
 
-    
+
     roomsIds.push(room.id)
     // Fim da Geração do código da sala
 
     room.lastUserId = 1;
     room.users = [];
     room.issues = [];
-    room.owner = { id: room.lastUserId, name: user, vote: '?', socket: socket };
+    room.owner = { id: room.lastUserId, name: user, vote: '?', room: roomId, socket: socket, voted: false };
     room.users.push({ id: room.lastUserId, name: user, vote: '?', socket: socket, room: roomId, voted: false });
     rooms.push(room);
     socket.emit("roomCreated", { roomId: room.id });
   }),
 
-  socket.on("joinRoomAsSpectator", (data) => {
-    //TO DO
-  })
+    socket.on("joinRoomAsSpectator", (data) => {
+      //TO DO
+    })
 
   socket.on("joinRoom", (data) => {
     console.log('🚀 ~ file: socket.js:55 ~ data:', data);
@@ -81,7 +81,7 @@ io.on("connection", (socket) => {
       socket.emit('invalidRoom');
       return;
     }
-    
+
     if (data.cookie) {
       const cookie = data.cookie.split('|');
       if (cookie[1] == room.id) {
@@ -115,17 +115,19 @@ io.on("connection", (socket) => {
       }
       io.to(room.id).emit("roomData", roomWithoutUsersSocket(room));
     }
-  }),
+  })
 
   socket.on("vote", (data) => {
     const room = rooms.find(room => room.id == data.roomId)
     const user = room.users.find(user => user.socket === socket);
     user.vote = data.value;
-    io.to(data.roomId).emit("userVoted", { vote: data.value, userId: user.id});
+    user.voted = true;
+    io.to(data.roomId).emit("userVoted", { voted: true, userId: user.id });
   })
 
   socket.on("revealVotes", (data) => {
-    io.to(data.roomId).emit("reveal", "Votos revelados", data.room.users.map(user => { return { name: user.name, vote: user.vote } }));
+    const room = rooms.find(room => room.id == data.roomId)
+    io.to(data.roomId).emit("reveal", roomWithoutUsersSocket(room, false));
   })
 
   socket.on("leaveRoom", (data) => {
@@ -136,13 +138,13 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("updateUsers", rooms.find(room => room.id == roomId).users);
   })
 
-  function roomWithoutUsersSocket(room) {
+  function roomWithoutUsersSocket(room, hideVotes = true) {
     return {
       id: room.id,
       title: room.title,
       owner: room.owner.name,
       users: room.users.map(user => {
-        return { id: user.id, name: user.name, vote: user.vote, room: user.room }
+        return { id: user.id, name: user.name, vote: (hideVotes ? '?' : user.vote), room: user.room, voted: user.voted }
       }),
       options: room.options,
       allowChangingVote: room.allowChangingVote,

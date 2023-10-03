@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import socket from '~/plugins/socket';
 
 const route = useRoute();
 const { id } = route.params;
@@ -12,6 +13,8 @@ const isOwner = ref(false);
 const options = ref([]);
 const users = ref([]);
 const showIssuesManagerModal = ref(true);
+const moda = ref(0);
+const media = ref(0);
 
 const subPage = ref("info");
 
@@ -19,7 +22,7 @@ const { $socket } = useNuxtApp()
 const cookie = useCookie('session', { maxAge: 60 * 60 * 8 })
 
 function flipCards() {
-  showingResults.value = !showingResults.value;
+  $socket.emit('revealVotes', { roomId: id })
 }
 
 // VAI SER REMOVIDO
@@ -83,10 +86,12 @@ function initializeSocket() {
 
   $socket.on('userVoted', (data) => {
     console.log("USERVOTED")
+    console.log(users)
     console.log(data)
+    console.log((users.value.filter(user => user.voted).length / users.value.length) * 100);
     const usersModified = users.value.map(e => {
       if (e.id == data.userId) {
-        e.vote = data.vote
+        e.voted = data.voted
       }
       return e
     })
@@ -96,6 +101,22 @@ function initializeSocket() {
   $socket.on('invalidCookie', () => {
     console.log('cookie invalido')
     cookie.value = null;
+  })
+
+  $socket.on('reveal', (data) => {
+    console.log('revealing')
+    console.log(data)
+    users.value = data.users;
+    media.value = (users.value.reduce((acc, user) => acc + parseInt(user.vote), 0) / users.value.length).toFixed(0)
+    moda.value = Object.keys(users.value.reduce((acc, user) => {
+      if (acc[user.vote]) {
+        acc[user.vote] += 1
+      } else {
+        acc[user.vote] = 1
+      }
+      return acc
+    }, {})).join(' | ')
+    showingResults.value = !showingResults.value;
   })
 
   if (cookie.value) {
@@ -113,6 +134,7 @@ function initializeSocket() {
 
 function vote(value) {
   console.log('votou')
+  console.log(id)
   $socket.emit('vote', { roomId: id, value: value })
 }
 
@@ -218,8 +240,12 @@ onMounted(() => {
                 <br>
                 <label>Progresso da votação:</label>
                 <div class="progress">
-                  <div class="progress-bar bg-success progress-bar-animated" role="progressbar" style="width: 25%;"
-                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div class="progress-bar bg-success progress-bar-animated" role="progressbar"
+                    :style="{ width: (users.filter(user => user.voted).length / users.length) * 100 + '%' }"
+                    :aria-valuenow="(users.filter(user => user.voted).length / users.length) * 100" aria-valuemin="0"
+                    aria-valuemax="100">
+                    {{ (users.filter(user => user.voted).length / users.length) * 100 }}%
+                  </div>
                 </div>
               </div>
               <!-- <hr> -->
@@ -258,9 +284,9 @@ onMounted(() => {
               <div class="row justify-content-center">
                 <div class="col-sm-6 col-xl-4">
                   <div class="card border-primary mb-3" style="min-height: 200px;">
-                    <div class="card-header" style="font-size: 24px;">Mediana</div>
+                    <div class="card-header" style="font-size: 24px;">Moda</div>
                     <div class="card-body d-grid" style="align-items: center;">
-                      <label style="font-size: 80px !important;">2</label>
+                      <label style="font-size: 80px !important;"> {{ moda }}</label>
                     </div>
                   </div>
                 </div>
@@ -268,7 +294,7 @@ onMounted(() => {
                   <div class="card border-primary mb-3" style="min-height: 200px;">
                     <div class="card-header" style="font-size: 24px;">Média</div>
                     <div class="card-body d-grid" style="align-items: center;">
-                      <label style="font-size: 80px !important;">3</label>
+                      <label style="font-size: 80px !important;">{{ media }}</label>
                     </div>
                   </div>
                 </div>
@@ -276,7 +302,7 @@ onMounted(() => {
                   <div class="card border-primary mb-3" style="min-height: 200px;">
                     <div class="card-header" style="font-size: 24px;">Total de Votos</div>
                     <div class="card-body d-grid" style="align-items: center;">
-                      <label style="font-size: 80px !important;">7</label>
+                      <label style="font-size: 80px !important;">{{ users.length }}</label>
                     </div>
                   </div>
                 </div>
